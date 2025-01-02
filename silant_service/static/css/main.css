@@ -1,0 +1,252 @@
+@font-face {
+    font-family: "PT Astra Sans";
+    src: url("../fonts/PT-Astra-Sans_Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "PT Astra Sans";
+    src: url("../fonts/PT-Astra-Sans_Bold.ttf") format("truetype");
+    font-weight: bold;
+    font-style: normal;
+}
+
+body {
+    margin: 0;
+    font-family: "PT Astra Sans", sans-serif;
+    background-color: #EBE6D6;
+    color: #163E6C;
+}
+
+header, footer {
+    background-color: #163E6C;
+    color: #fff;
+    padding: 10px 20px;
+    text-align: center;
+}
+header img {
+    height: 50px;
+}
+.container {
+    max-width: 1200px;
+    min-width: 320px; /* Минимальная ширина для предотвращения поломки */
+    margin: 0 auto;
+    padding: 20px;
+}
+.input-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+input[type="text"] {
+    padding: 10px;
+    border: 1px solid #163E6C;
+    border-radius: 4px;
+    width: 300px;
+}
+button {
+    padding: 10px 20px;
+    background-color: #D20A11;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #b00d0e;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    border: 1px solid #163E6C;
+    padding: 10px;
+    text-align: center;
+}
+table th {
+    background-color: #D20A11;
+    color: #fff;
+}
+footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+
+/* Плашка авторизации */
+.auth-info {
+    display: flex;
+    justify-content: flex-end;
+    align-items: right;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.user-name {
+    display: flex;
+    font-weight: bold;
+    color: #fff; /* Устанавливаем белый цвет */
+}
+
+.auth-button, .logout-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.auth-button {
+    background-color: #D20A11;
+}
+
+.auth-button:hover {
+    background-color: #B00D0E;
+}
+
+.logout-button {
+    background-color: #163E6C;
+}
+
+.logout-button:hover {
+    background-color: #122D4F;
+}
+
+
+.tabs {
+    margin-top: 20px;
+}
+
+.tab-button {
+    background-color: #f1f1f1;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px 20px;
+    font-size: 13px;
+}
+
+.tab-button.active {
+    background-color: #163E6C;
+    color: white;
+}
+
+.tab-content {
+    display: none;
+    max-height: 80vh; /* Ограничиваем максимальную высоту контента (80% от высоты экрана) */
+    overflow-y: auto; /* Добавляем вертикальную прокрутку, если контент выходит за пределы */
+    padding: 10px;
+    box-sizing: border-box; /* Учитываем padding в расчете размеров */
+    transition: max-height 0.3s ease; /* Плавное изменение высоты */
+    font-weight: bold;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+
+    /* Стиль для текста ошибки */
+.error-message {
+    font-size: 12px;
+    margin-top: 5px;
+    color: red;
+}
+
+.text-logo {
+    max-width: 100%; /* Ограничиваем максимальную ширину */
+    height: auto; /* Сохраняем пропорции */
+    max-height: 50px; /* Устанавливаем максимальную высоту */
+}
+
+
+/* Стиль для модального окна */
+.modal {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    display: none;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+
+
+
+@media (max-width: 768px) {
+    header img {
+        height: 40px; /* Уменьшить логотип */
+    }
+
+    input[type="text"] {
+        width: 100%; /* Растягиваем инпут */
+    }
+
+    .container {
+        padding: 10px; /* Уменьшаем отступы */
+    }
+
+    .tab-content {
+        font-size: 14px; /* Уменьшить шрифт */
+    }
+}
+
+@media (max-width: 480px) {
+    .tab-button {
+        font-size: 12px;
+        padding: 8px 15px;
+    }
+
+    .modal-content {
+        width: 80%; /* Уменьшаем ширину модального окна */
+    }
+}
+
+@media (max-width: 768px) {
+    .save-row-machine-button,
+    .delete-row-machine-button,
+    .edit-row-machine-button {
+        font-size: 10px;
+        padding: 4px 8px;
+        height: 25px;
+    }
+}

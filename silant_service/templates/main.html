@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Силант - Приветственная страница</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {% if user.username %}
+  <script src="{% static 'js/main.js' %}" defer></script>  <!-- Для аутентифицированных пользователей -->
+  <!-- Подключение CSS для DataTables -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+
+<!-- Подключение JS для DataTables -->
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+
+    {% else %}
+  <script src="{% static 'js/main_guest.js' %}" defer></script> <!-- Для неаутентифицированных пользователей -->
+{% endif %}
+</head>
+<body>
+    <header>
+        <img src="{% static 'images/Logotype_accent_RGB_1.jpg' %}" alt="Силант Логотип">
+        <h1>Электронная сервисная книжка "Мой Силант"</h1>
+        <div class="auth-info">
+            {% if user.is_authenticated %}
+                <span class="user-name">{{ user.username }}</span>
+                <a href="{% url 'logout' %}" class="logout-button">Выйти</a>
+
+                <!-- Элемент для передачи групп пользователя -->
+                 <div id="user-groups" style="display: none;">
+                    {{ user_groups|json_script:"user-groups-data" }}
+                 </div>
+            {% else %}
+                <a href="{% url 'login' %}" class="auth-button">Авторизация</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <main class="container">
+        <img src="{% static 'images/Logotype_text_RGB_1.svg' %}" alt="Силант текст Логотип" class="text-logo">
+
+        <h3>Добро пожаловать{% if user_first_name %}, {{ user_first_name }}{% endif %}!</h3>
+        <h2>Информация о комплектации и технических характеристиках Вашей техники</h2>
+
+        <div class="input-group">
+            <label for="serial">Заводской номер:</label>
+            <input type="text" id="serial" placeholder="Введите заводской номер">
+            <button type="button" id="search-button">Поиск</button>
+            <div id="error-text" style="color: red; font-size: 12px; display: none;"></div>
+        </div>
+
+        {% if user.username %}
+            <!-- Вкладки и контент для авторизованных пользователей -->
+            <div class="tabs" style="display: none;">
+                <button class="tab-button active" data-tab="machine-tab">Общая информация</button>
+                <button class="tab-button" data-tab="maintenance-tab">ТО</button>
+                <button class="tab-button" data-tab="claims-tab">Рекламации</button>
+            </div>
+
+            <div id="machine-tab" class="tab-content" style="display: none;">
+                <div id="machine-result"></div>
+            </div>
+            <div id="maintenance-tab" class="tab-content" style="display: none;">
+                <div id="maintenance-result"></div>
+            </div>
+            <div id="claims-tab" class="tab-content" style="display: none;">
+                <div id="claims-result"></div>
+            </div>
+
+            <button type="button" id="export-excel-button" style="display: none;">Экспорт в Excel</button>
+        {% else %}
+            <!-- Таблица для неавторизованных пользователей -->
+            <div id="guest-machine-result" style="display: none;"></div> <!-- Место для отображения таблицы -->
+            <div id="error-text" style="color: red; font-size: 12px; display: none;"></div> <!-- Место для вывода ошибки -->
+        {% endif %}
+    </main>
+
+
+
+    <footer>
+        <p>+7-8352-20-12-09, telegram</p>
+        <p>Мой Силант 2022</p>
+    </footer>
+</body>
+</html>

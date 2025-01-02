@@ -1,0 +1,104 @@
+/* Общий стиль */
+body {
+    margin: 0;
+    font-family: "PT Astra Sans", sans-serif;
+    background-color: #EBE6D6;
+    color: #163E6C;
+}
+
+/* Шапка */
+header {
+    background-color: #163E6C;
+    color: #fff;
+    padding: 10px 20px;
+    text-align: center;
+}
+
+header img {
+    height: 50px;
+}
+
+/* Центрирование блока */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+
+/* Блок авторизации */
+.login-box {
+    background-color: #fff;
+    border: 2px solid #163E6C;
+    border-radius: 10px;
+    padding: 20px;
+    width: 380px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.login-box h2 {
+    margin-bottom: 20px;
+    color: #163E6C;
+}
+
+/* Поля ввода */
+.input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.input-group label {
+    font-size: 14px;
+    color: #163E6C;
+}
+
+.input-group input {
+    width: 94%;
+    padding: 10px;
+    border: 1px solid #163E6C;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Кнопка */
+button {
+    padding: 10px 20px;
+    background-color: #D20A11;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #b00d0e;
+}
+
+/* Сообщения об ошибках */
+#error-message {
+    margin-top: 15px;
+    color: #D20A11;
+    font-size: 14px;
+}
+
+/* Подвал */
+footer {
+    background-color: #163E6C;
+    color: #fff;
+    text-align: center;
+    padding: 10px 20px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+input:invalid {
+    border: 2px solid red; /* красная рамка при ошибке */
+}
+
+input.error {
+    border: 2px solid red;
+}
