@@ -4,18 +4,21 @@ body {
     font-family: "PT Astra Sans", sans-serif;
     background-color: #EBE6D6;
     color: #163E6C;
+    box-sizing: border-box;
 }
 
 /* Шапка */
 header {
     background-color: #163E6C;
     color: #fff;
-    padding: 10px 20px;
+    padding: 1rem 2rem;
     text-align: center;
 }
 
 header img {
-    height: 50px;
+    max-height: 50px;
+    width: auto;
+    height: auto;
 }
 
 /* Центрирование блока */
@@ -23,7 +26,8 @@ header img {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 80vh;
+    min-height: 80vh;
+    padding: 0 10px;
 }
 
 /* Блок авторизации */
@@ -31,8 +35,9 @@ header img {
     background-color: #fff;
     border: 2px solid #163E6C;
     border-radius: 10px;
-    padding: 20px;
-    width: 380px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 380px;
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -49,26 +54,27 @@ header img {
 }
 
 .input-group label {
-    font-size: 14px;
+    font-size: 0.875rem; /* 14px */
     color: #163E6C;
 }
 
 .input-group input {
-    width: 94%;
+    width: 100%;
     padding: 10px;
     border: 1px solid #163E6C;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 1rem; /* 16px */
+    box-sizing: border-box;
 }
 
 /* Кнопка */
 button {
-    padding: 10px 20px;
+    padding: 0.625rem 1.25rem; /* 10px 20px */
     background-color: #D20A11;
     color: #fff;
     border: none;
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 1rem; /* 16px */
     cursor: pointer;
     width: 100%;
 }
@@ -81,7 +87,7 @@ button:hover {
 #error-message {
     margin-top: 15px;
     color: #D20A11;
-    font-size: 14px;
+    font-size: 0.875rem; /* 14px */
 }
 
 /* Подвал */
@@ -101,4 +107,43 @@ input:invalid {
 
 input.error {
     border: 2px solid red;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    header {
+        padding: 1rem;
+    }
+
+    .login-box {
+        width: 90%;
+        padding: 1.5rem;
+    }
+
+    .input-group input {
+        font-size: 0.875rem; /* 14px */
+    }
+
+    button {
+        font-size: 0.875rem; /* 14px */
+    }
+
+    footer {
+        padding: 8px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-box {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .input-group input {
+        font-size: 0.875rem;
+    }
+
+    button {
+        font-size: 0.875rem;
+    }
 }
