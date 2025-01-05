@@ -202,40 +202,74 @@ class MachineViewSet(viewsets.ModelViewSet):
 
 
 class TableViewSet(ReadOnlyModelViewSet):
-
-
     queryset = Machine.objects.all().order_by('serial_number')
     serializer_class = MachineSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter]
 
+    def get_queryset(self):
+        user = self.request.user
+        serial_number = self.request.query_params.get('serial_number')
+
+        # Начальный запрос для машин
+        machine_queryset = Machine.objects.all()
+
+        # Фильтрация по serial_number для машин
+        if serial_number:
+            machine_queryset = machine_queryset.filter(serial_number=serial_number)
+
+        # Логика фильтрации по ролям для машин
+        if user.is_authenticated:
+            if user.groups.filter(name='manager').exists():
+                return machine_queryset
+
+            if user.groups.filter(name='client').exists():
+                client = UserReference.objects.filter(user=user).first()
+                if client:
+                    return machine_queryset.filter(client=client)
+                else:
+                    raise PermissionDenied("User is not associated with a client.")
+
+            if user.groups.filter(name='service_company').exists():
+                service_company = UserReference.objects.filter(user=user).first()
+                if service_company:
+                    return machine_queryset.filter(service_company=service_company)
+                else:
+                    raise PermissionDenied("User is not associated with a service company.")
+        return machine_queryset
+
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def export_excel(self, request):
-
-        # Логика экспорта в Excel
         user = request.user
 
-        # Получение данных для фильтрации по ролям
-        machine_queryset = self.filter_queryset(self.get_queryset())
+        # Получаем отфильтрованные данные для машин
+        machine_queryset = self.get_queryset()
+
+        # Получаем отфильтрованные данные для техобслуживания и заявок
         maintenance_queryset = Maintenance.objects.all()
         claim_queryset = Claim.objects.all()
 
-        # Применяем фильтры по ролям
+        # Логика фильтрации по ролям для техобслуживания
         if user.is_authenticated:
             if user.groups.filter(name='manager').exists():
                 pass  # Менеджер видит все данные
             elif user.groups.filter(name='client').exists():
-                machine_queryset = machine_queryset.filter(client=user)
-                maintenance_queryset = maintenance_queryset.filter(machine__client=user)
-                claim_queryset = claim_queryset.filter(machine__client=user)
+                client = UserReference.objects.filter(user=user).first()
+                if client:
+                    maintenance_queryset = maintenance_queryset.filter(machine__client=client)
+                    claim_queryset = claim_queryset.filter(machine__client=client)
+                else:
+                    raise PermissionDenied("User is not associated with a client.")
             elif user.groups.filter(name='service_company').exists():
-                machine_queryset = machine_queryset.filter(service_company=user)
-                maintenance_queryset = maintenance_queryset.filter(machine__service_company=user)
-                claim_queryset = claim_queryset.filter(machine__service_company=user)
-        else:
-            return HttpResponse("Unauthorized", status=401)
+                service_company = UserReference.objects.filter(user=user).first()
+                if service_company:
+                    maintenance_queryset = maintenance_queryset.filter(machine__service_company=service_company)
+                    claim_queryset = claim_queryset.filter(machine__service_company=service_company)
+                else:
+                    raise PermissionDenied("User is not associated with a service company.")
 
         # Создание Excel-файла
         workbook = Workbook()
+
 
         # 1. Лист "Machines"
         sheet1 = workbook.active

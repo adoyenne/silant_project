@@ -110,6 +110,8 @@ input.error {
 }
 
 /* Адаптивность */
+
+/* Для планшетов и устройств с шириной экрана до 768px */
 @media (max-width: 768px) {
     header {
         padding: 1rem;
@@ -121,11 +123,11 @@ input.error {
     }
 
     .input-group input {
-        font-size: 0.875rem; /* 14px */
+        font-size: 0.875rem; /* Уменьшаем размер шрифта в инпуте */
     }
 
     button {
-        font-size: 0.875rem; /* 14px */
+        font-size: 0.875rem; /* Уменьшаем размер шрифта на кнопке */
     }
 
     footer {
@@ -133,6 +135,7 @@ input.error {
     }
 }
 
+/* Для мобильных устройств с шириной экрана до 480px */
 @media (max-width: 480px) {
     .login-box {
         width: 100%;
@@ -140,10 +143,14 @@ input.error {
     }
 
     .input-group input {
-        font-size: 0.875rem;
+        font-size: 0.875rem; /* Уменьшаем шрифт в полях ввода */
     }
 
     button {
-        font-size: 0.875rem;
+        font-size: 0.875rem; /* Уменьшаем шрифт на кнопке */
+    }
+
+    footer {
+        padding: 8px 10px;
     }
 }

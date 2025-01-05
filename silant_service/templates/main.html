@@ -44,13 +44,6 @@
         <h3>Добро пожаловать{% if user_first_name %}, {{ user_first_name }}{% endif %}!</h3>
         <h2>Информация о комплектации и технических характеристиках Вашей техники</h2>
 
-        <div class="input-group">
-            <label for="serial">Заводской номер:</label>
-            <input type="text" id="serial" placeholder="Введите заводской номер">
-            <button type="button" id="search-button">Поиск</button>
-            <div id="error-text" style="color: red; font-size: 12px; display: none;"></div>
-        </div>
-
         {% if user.username %}
             <!-- Вкладки и контент для авторизованных пользователей -->
             <div class="tabs" style="display: none;">
@@ -71,8 +64,15 @@
 
             <button type="button" id="export-excel-button" style="display: none;">Экспорт в Excel</button>
         {% else %}
+
+        <div class="input-group">
+            <label for="serial">Заводской номер:</label>
+            <input type="text" id="serial" placeholder="Введите заводской номер">
+            <button type="button" id="search-button">Поиск</button>
+            <div id="error-text" style="color: red; font-size: 12px; display: none;"></div>
+        </div>
             <!-- Таблица для неавторизованных пользователей -->
-            <div id="guest-machine-result" style="display: none;"></div> <!-- Место для отображения таблицы -->
+            <div id="guest-machine-result" class="tab-content" style="display: none;"></div> <!-- Место для отображения таблицы -->
             <div id="error-text" style="color: red; font-size: 12px; display: none;"></div> <!-- Место для вывода ошибки -->
         {% endif %}
     </main>

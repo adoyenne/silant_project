@@ -41,7 +41,10 @@ function showGuestTable(data) {
     const resultDiv = document.getElementById("guest-machine-result");
     resultDiv.style.display = "block";  // Показываем блок с результатами
 
-    let resultHTML = '<h3>Общая информация:</h3><table border="1"><thead><tr>';
+    let resultHTML = '<h3>Общая информация:</h3>';
+
+    // Обертываем таблицу в контейнер для прокрутки
+    resultHTML += '<div class="table-container"><table border="1"><thead><tr>';
     const headers = ["№ п/п", "Модель техники", "Зав. № машины", "Модель двигателя", "Зав. № двигателя",
         "Модель трансмиссии (производитель, артикул)", "Зав. № трансмиссии", "Модель ведущего моста",
         "Зав. № ведущего моста", "Модель управляемого моста", "Зав. № управляемого моста"];
@@ -64,7 +67,7 @@ function showGuestTable(data) {
         resultHTML += '</tr>';
     });
 
-    resultHTML += "</tbody></table>";
+    resultHTML += "</tbody></table></div>"; // Закрываем контейнер таблицы
     resultDiv.innerHTML = resultHTML;  // Вставляем результат в блок
 }
 

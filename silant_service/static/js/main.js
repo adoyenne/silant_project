@@ -8,20 +8,25 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Добавляем обработчик для кнопки поиска
-    const searchButton = document.getElementById("search-button");
-    if (searchButton) {
-        searchButton.addEventListener("click", searchMachine);
-    }
-
     // Обработчик кнопки экспорта в Excel
     const exportButton = document.getElementById("export-excel-button");
     if (exportButton) {
         exportButton.addEventListener("click", exportToExcel);
     }
 
-
+    // Проверка авторизации пользователя
+    const isAuthenticated = checkUserAuthentication();
+    if (isAuthenticated) {
+        // Автоматическая загрузка данных для авторизованного пользователя
+        loadUserData();
+    }
 });
+
+// Проверка авторизации пользователя
+function checkUserAuthentication() {
+    const userGroupsElement = document.getElementById("user-groups-data");
+    return userGroupsElement && userGroupsElement.textContent.trim().length > 0;
+}
 
 // Функция открытия вкладок
 function openTab(event, tabId) {
@@ -41,115 +46,44 @@ function openTab(event, tabId) {
     // Показываем таблицу только для выбранной вкладки
     const selectedTabContent = document.getElementById(tabId);
     if (selectedTabContent) {
-        selectedTabContent.style.display = "block"; // Показываем выбранную таблицу
+        selectedTabContent.style.display = "block";
     }
 }
 
-// Функция поиска машины
-function searchMachine() {
+// Функция загрузки данных пользователя
+function loadUserData() {
+
     const serialInput = document.getElementById("serial");
     const serialNumber = serialInput ? serialInput.value.trim() : null;
-
-    // Проверяем, если заводской номер пустой
-    if (!serialNumber) {
-        fetchError("Введите заводской номер!");
-        return;
-    }
-
-    // Загружаем данные для машины и проверяем, существует ли такой серийный номер
-    fetchData(`/api/machines/?serial_number=${serialNumber}`, function(data) {
-        // Очищаем предыдущие таблицы перед загрузкой новых
-        clearPreviousTables();
-
-        // Если номер не найден в базе данных
-        if (data.length === 0) {
-            fetchError("Машина с таким номером не найдена.");
-            return;  // Прекращаем выполнение, если серийный номер не найден
-        }
-
-        // Если номер корректный, показываем таблицы и выполняем дальнейшие запросы
-        resetfetchError("Неверный ввод.")
-        showTables(serialNumber);
-    });
-}
-
-// Функция для отображения ошибки
-function fetchError(message) {
-    const serialInputField = document.getElementById("serial");
-    const searchButton = document.getElementById("search-button");
-
-    // Показываем ошибку в поле ввода
-    serialInputField.style.borderColor = "red";  // Красная рамка у поля
-    serialInputField.style.backgroundColor = "#ffdddd"; // Красный фон поля ввода
-
-    // Ищем блок для ошибки, если он есть
-    let errorText = document.getElementById("error-text");
-
-    if (!errorText) {
-        // Если блока ошибки нет, создаем его
-        errorText = document.createElement("div");
-        errorText.id = "error-text";
-        errorText.style.color = "red";  // Устанавливаем красный цвет для текста ошибки
-        errorText.style.fontSize = "12px";  // Размер шрифта для ошибки
-        serialInputField.parentElement.appendChild(errorText);
-    }
-
-    // Устанавливаем сообщение об ошибке
-    errorText.textContent = message;  // Используем переданное сообщение или дефолтное
-}
-
-//Функция для сброса ошибки
-function resetfetchError() {
-    const serialInputField = document.getElementById("serial");
-    const searchButton = document.getElementById("search-button");
-    const errorText = document.getElementById("error-text");
-
-    // Убираем красную рамку и фон у поля ввода
-    serialInputField.style.borderColor = "";
-    serialInputField.style.backgroundColor = "";
-
-    // Убираем сообщение об ошибке
-    if (errorText) {
-        errorText.remove();
-    }
-
-}
-
-// Функция для очистки предыдущих таблиц
-function clearPreviousTables() {
-    // Скрываем все таблицы
-    const tabContents = document.querySelectorAll(".tabs, .tab-content, #export-excel-button");
-    tabContents.forEach(content => content.style.display = "none");
-
-
-
-    // Очищаем данные внутри таблиц
-    tabContents.forEach(content => {
-        const table = content.querySelector("table");
-        if (table) {
-            table.innerHTML = "";
-        }
-    });
-}
-
-// Функция для показа таблиц и вкладок
-function showTables(serialNumber) {
     // Показываем вкладки и таблицы
     document.querySelectorAll(".tabs, .tab-content, #export-excel-button").forEach(element => {
         element.style.display = "block"; // Показываем вкладки и таблицы
     });
 
-    // Сначала показываем только таблицу для "Общей информации"
+    // Открываем вкладку "Общая информация" по умолчанию
     openTab({ currentTarget: document.querySelector('.tab-button[data-tab="machine-tab"]') }, "machine-tab");
 
-    // Загружаем данные для каждой вкладки с передачей serialNumber
-    fetchData(`/api/maintenances/?serial_number=${serialNumber}`, (data) => populateMaintenanceTab(data, serialNumber));
-    fetchData(`/api/claims/?serial_number=${serialNumber}`, (data) => populateClaimsTab(data, serialNumber));
+    // Загружаем данные для каждой вкладки
+    fetchData("/api/maintenances/", (data) => {
+    const extractedSerial = extractSerialNumber(data);
+    populateMaintenanceTab(data, extractedSerial)
+    });
+    fetchData("/api/claims/", (data) => {
+    const extractedSerial = extractSerialNumber(data);
+    populateClaimsTab(data, extractedSerial)
+    });
 
-    // Заполняем данные для машины
-    fetchData(`/api/machines/?serial_number=${serialNumber}`, (data) => populateMachineTab(data, serialNumber));
+    fetchData("/api/machines/", populateMachineTab);
 }
 
+// Функция извлечения серийного номера из данных
+function extractSerialNumber(data) {
+    if (!data || !Array.isArray(data)) return null;
+
+    // Предполагаем, что данные имеют поле "serial_number"
+    const firstItem = data.find(item => item.serial_number);
+    return firstItem ? firstItem.serial_number : null;
+}
 
 // Универсальная функция для запросов
 function fetchData(url, callback) {
@@ -163,21 +97,40 @@ function fetchData(url, callback) {
         .then(data => callback(data))
         .catch(error => {
             console.error(`Ошибка при запросе ${url}:`, error);
-            fetchError("Произошла ошибка при запросе данных.");
         });
 }
 
-function initializeDataTable(selector, defaultSortColumn, sortDirection) {
+
+// Регистрируем пользовательский тип сортировки для формата DD/MM/YYYY
+$.fn.dataTable.ext.type.order['date-dd-mm-yyyy-pre'] = function(date) {
+    if (!date || date.trim() === '') {
+        return 0; // Если дата отсутствует, возвращаем минимальное значение
+    }
+
+    // Убираем HTML-теги и извлекаем только текст
+    const cleanDate = date.replace(/<[^>]+>/g, '').trim(); // Убираем теги
+    const parts = cleanDate.split('/');
+    return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
+};
+
+// Функция инициализации таблицы
+function initializeDataTable(selector, defaultSortColumn, sortDirection, dateColumns) {
     $(selector).DataTable({
-        "order": [[defaultSortColumn, sortDirection]],
+        "order": [[defaultSortColumn, sortDirection]], // Устанавливаем сортировку по умолчанию
         "paging": true,
         "searching": true,
         "ordering": true,
         "info": true,
-        "lengthChange": false, // Отключаем изменение числа строк на странице
+        "lengthChange": false,
         "language": {
-            "url": "/static/js/ru.json" // Относительный путь к файлу ru.json
-        }
+            "url": "/static/js/ru.json"
+        },
+        "columnDefs": [
+            {
+                "type": "date-dd-mm-yyyy", // Указываем пользовательский тип сортировки
+                "targets": dateColumns // Массив индексов колонок с датами
+            }
+        ],
     });
 }
 
@@ -387,11 +340,12 @@ function populateMachineTab(data, serialNumber) {
     // Инициализируем кнопки "Подробнее" для клиента и сервисной компании
     addUserDetailsButtons();
 
-        // Инициализируем сортировку таблицы
-    initializeDataTable('#machine-table', 11, 'desc');  //
 
     // Инициализируем события для строк
     initializeRowEventListenersMachine();
+
+    // Инициализируем сортировку таблицы
+    initializeDataTable('#machine-table', 11, 'desc', [11]);  //
 }
 
 // Создание строки таблицы для техники
@@ -932,7 +886,7 @@ function populateMaintenanceTab(data, serialNumber) {
 
 
     // Инициализируем сортировку таблицы
-    initializeDataTable('#maintenance-table', 2, 'desc');  //
+    initializeDataTable('#maintenance-table', 2, 'desc', [2]);  //по столбцу «дата проведения ТО»
 
        // Назначаем обработчики событий с делегированием
     initializeRowEventListeners(serialNumber);
@@ -949,7 +903,8 @@ function createTableRow(item, index, isEditable, hasActionAccess) {
     const row = `
         <tr data-id="${item.recordId || ''}" data-index="${index}">
 
-            <td>${item.serial_number || '—'}</td>
+
+            <td contenteditable="${isEditable}">${item.serial_number || '—'}</td>
 
             <td>
                 <span class="maintenance-type-display">${item.maintenance_type || '—'}</span>
@@ -1048,21 +1003,24 @@ function saveRowData(event) {
     const maintenanceDateInput = row.querySelector('.maintenance-date-input');
     const orderDateInput = row.querySelector('.order-date-input');
 
-    // Извлекаем значение operating_hours из поля contenteditable
-    const operatingHours = parseInt(row.querySelector('[contenteditable]').textContent.trim()) || null;
-
     const data = {
         serial_number: row.cells[0].textContent.trim(),  // Заводской номер сохраняем
         maintenance_type: row.querySelector('.maintenance-type-select').value || null,
         maintenance_date: formatDateForAPI(maintenanceDateInput),
-        operating_hours: operatingHours,  // Сохраняем значение operating_hours
+        operating_hours: parseInt(row.cells[3].textContent.trim()) || 0,
         order_number: row.cells[4].textContent.trim(),
         order_date: formatDateForAPI(orderDateInput),
         organization: row.querySelector('.organization-select').value || null,
     };
 
+
+
     const method = recordId ? 'PUT' : 'POST'; // Если есть ID, обновляем; иначе создаем
     const url = recordId ? `/api/maintenances/${recordId}/` : '/api/maintenances/';
+
+    console.log('Отправляемые данные:', { method, url, data });
+
+
 
     fetch(url, {
         method: method,
@@ -1237,7 +1195,7 @@ function populateClaimsTab(data, serialNumber) {
 
     resultDiv.innerHTML = resultHTML;
 
-    initializeDataTable('#claim-table', 8, 'desc'); // Сортировка по "Дата отказа"
+    initializeDataTable('#claim-table', 1, 'desc', [1]);  // Сортировка по "Дата отказа"
     initializeRowEventListenersClaim(serialNumber); // Инициализация обработчиков
 
     // Показываем кнопку для экспорта
@@ -1292,7 +1250,7 @@ function createRowClaim(item, index, isEditable, hasActionAccess) {
 
     const row = `
         <tr data-id="${item.recordId || ''}" data-index="${index}">
-            <td>${item.serial_number || '—'}</td>
+            <td contenteditable="${isEditable}">${item.serial_number || '—'}</td>
             <td>
                 <span class="date-display">${item.failure_date ? new Date(item.failure_date).toLocaleDateString() : '—'}</span>
                 <input type="date" class="date-input failure-date-input" value="${formatDate(item.failure_date)}" style="display: ${isEditable ? 'block' : 'none'};">
